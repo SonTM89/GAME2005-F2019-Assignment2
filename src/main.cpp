@@ -38,7 +38,7 @@ int main(int argc, char * args[])
 	freopen("CON", "w", stdout);
 
 
-	TheGame::Instance()->init("Hello World", 100, 100, 800, 600, false);
+	TheGame::Instance()->init("Assignment 2 Simulation", 100, 100, 1024, 600, false);
 
 	while (TheGame::Instance()->running())
 	{

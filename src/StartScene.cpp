@@ -30,9 +30,9 @@ void StartScene::draw()
 
 void StartScene::update()
 {
-	if (m_isGravityEnabled)
+	if (m_isStartingMotion)
 	{
-		m_move();
+			m_move();
 	}
 
 	if (m_displayUI)
@@ -148,7 +148,7 @@ void StartScene::handleEvents()
 	io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
 	io.MouseWheel = static_cast<float>(wheel);
 
-	io.DisplaySize.x = 1280;
+	io.DisplaySize.x = 1024;
 	io.DisplaySize.y = 720;
 
 	m_ImGuiKeyMap();
@@ -168,7 +168,7 @@ void StartScene::start()
 	addChild(m_pInstructionsLabel)*/
 
 	m_pShip = new Ship();
-	m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
+	m_pShip->setPosition(glm::vec2(100.0f, 580.0f));
 	addChild(m_pShip);
 }
 
@@ -296,17 +296,17 @@ void StartScene::m_updateUI()
 	}
 
 	/*************************************************************************************************/
-	if (ImGui::Button("Toggle Gravity"))
+	if (ImGui::Button("Starting Motion"))
 	{
-		m_isGravityEnabled = (m_isGravityEnabled) ? false : true;
+		m_isStartingMotion = (m_isStartingMotion) ? false : true;
 	}
 
 	ImGui::SameLine();
 
 	if (ImGui::Button("Reset All"))
 	{
-		m_isGravityEnabled = false;
-		m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
+		m_isStartingMotion = false;
+		m_pShip->setPosition(glm::vec2(100.0f, 580.0f));
 		m_gravity = 9.8f;
 		m_PPM = 5.0f;
 		m_Atime = 0.016667f;
@@ -314,6 +314,9 @@ void StartScene::m_updateUI()
 		m_velocity = 100.0f;
 		m_velocityX = 0.0f;
 		m_velocityY = 0.0f;
+
+		m_mass = 3.2f;
+		m_windForce = 0.4f;
 	}
 
 	ImGui::PushItemWidth(80);
@@ -333,6 +336,16 @@ void StartScene::m_updateUI()
 	}
 
 	if (ImGui::SliderFloat("Velocity", &m_velocity, 0.0f, 200.0f, "%.1f"))
+	{
+
+	}
+
+	if (ImGui::SliderFloat("Mass", &m_mass, 0.0f, 100.0f, "%.1f"))
+	{
+
+	}
+
+	if (ImGui::SliderFloat("Wind Force", &m_windForce, 0.0f, 20.0f, "%.1f"))
 	{
 
 	}
@@ -544,10 +557,12 @@ void StartScene::m_move()
 	// Pfy = Piy + Viysin(theta)T + 1/2AyT^2
 
 	// velocity components
-	m_velocityX = (m_velocity * m_PPM) * cos(m_angle * Deg2Rad);
-	m_velocityY = (m_velocity * m_PPM) * -sin(m_angle * Deg2Rad);
+	m_velocityX = (m_velocity * m_PPM) * cos(m_angle * Deg2Rad) + (m_windForce * m_Atime/ m_mass);
+	m_velocityY = (m_velocity * m_PPM) * -sin(m_angle * Deg2Rad) + (m_gravity * m_Atime);
 	// final velocity vector
 	glm::vec2 velocity_vector = glm::vec2(m_velocityX, m_velocityY);
+
+
 
 
 	m_acceleration = glm::vec2(0.0f, m_gravity) * m_PPM;
@@ -559,5 +574,12 @@ void StartScene::m_move()
 
 	m_Atime += m_time;
 	m_pShip->setPosition(m_finalPosition);
+	
+	// Checking destination position
+	if (m_pShip->getPosition().y >= 580.f)
+	{
+		m_pShip->setPosition(glm::vec2(m_pShip->getPosition().x, 580.f));
+		m_isStartingMotion = false;
+	}
 }
 

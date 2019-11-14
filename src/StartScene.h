@@ -41,7 +41,7 @@ private:
 	bool m_displayUI = true;
 
 	// Physics Variables
-	bool m_isGravityEnabled = false;
+	bool m_isStartingMotion = false;
 	float m_gravity = 9.8f;
 	float m_PPM = 5.0f; // pixels per meter - scale
 
@@ -50,10 +50,13 @@ private:
 	float m_velocityX = 0.0f;
 	float m_velocityY = 0.0f;
 	glm::vec2 m_acceleration = glm::vec2(0.0f, 0.0f);
-	float m_time = 0.016667f; // approximately 16 ms
-	float m_Atime = 0.016667f; // accumulated time
+	float m_time = 0.016667f;	// approximately 16 ms
+	float m_Atime = 0.016667f;	// accumulated time
 
-	float m_angle = 45.0f; // the "kicking" angle
+	float m_angle = 45.0f;		// the "kicking" angle
+
+	float m_mass = 3.2f;		// object mass
+	float m_windForce = 0.4f;	// wind force
 
 	// Physics Functions
 	void m_move();
